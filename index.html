@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Code to List</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.1/codemirror.min.css"
+    />
+    <style>
+      body {
+        margin: 0;
+      }
+      .page {
+        display: flex;
+        padding: 24px;
+        justify-content: space-between;
+        gap: 24px;
+        height: calc(100vh - 48px);
+        width: calc(100% - 48px);
+      }
+      #code-content,
+      #preview {
+        width: calc(50% - 64px - 24px);
+        border: 1px solid lightgray;
+        border-radius: 4px;
+        height: 100%;
+        background-color: #ecf0f1;
+        max-width: 100%;
+      }
+
+      #preview {
+        position: relative;
+      }
+
+      #code,
+      .CodeMirror {
+        border-radius: 4px;
+        height: 100%;
+      }
+
+      #convert,
+      #copy {
+        border-radius: 2px;
+        border: 0;
+        background-color: #2980b9;
+        color: #fff;
+        padding: 16px;
+        font-size: large;
+        cursor: pointer;
+      }
+
+      #copy {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        font-size: smaller;
+        padding: 8px;
+        z-index: 3;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div id="code-content">
+        <textarea id="code"></textarea>
+      </div>
+      <div class="actions">
+        <button id="convert" onclick="convertCode()">Convert</button>
+      </div>
+      <div id="preview">
+        <button id="copy">Copy</button>
+      </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.1/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.1/mode/javascript/javascript.min.js"></script>
+
+    <script>
+      const editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+        lineNumbers: true,
+        mode: "javascript",
+      });
+      const previewEditor = CodeMirror(document.getElementById("preview"), {
+        readOnly: true,
+        mode: "javascript",
+      });
+      function convertCode() {
+        const codeInput = editor.getValue();
+        const lines = codeInput.split("\n");
+
+        previewEditor.setValue(JSON.stringify(lines, null, 2));
+      }
+
+      document.getElementById("copy").addEventListener("click", function () {
+        navigator.clipboard.writeText(previewEditor.getValue()).then(() => {
+          const copy = document.getElementById("copy");
+
+          const originalText = copy.innerText;
+          const originalBackground = copy.style.background;
+
+          copy.innerText = "Copied";
+          copy.style.background = "#16a085";
+          setTimeout(() => {
+            copy.innerText = originalText;
+            copy.style.background = originalBackground;
+          }, 1500);
+        });
+      });
+    </script>
+  </body>
+</html>
