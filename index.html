@@ -75,11 +75,15 @@
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.1/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.1/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.1/mode/xml/xml.min.js"></script>
 
     <script>
       const editor = CodeMirror.fromTextArea(document.getElementById("code"), {
         lineNumbers: true,
         mode: "javascript",
+      });
+      editor.on("change", (cmInstance) => {
+        determineCodeMirrorType(cmInstance);
       });
       const previewEditor = CodeMirror(document.getElementById("preview"), {
         readOnly: true,
@@ -107,6 +111,24 @@
           }, 1500);
         });
       });
+      function determineCodeMirrorType(cm) {
+        if (cm.getMode().name == "javascript") {
+          checkAndSwitchToXML(cm, cm.getValue());
+        } else if (cm.getMode().name == "xml") {
+          checkAndSwitchToJSON(cm, cm.getValue());
+        }
+      }
+
+      function checkAndSwitchToXML(cm, val) {
+        if (/^\s*</.test(val)) {
+          cm.setOption("mode", "xml");
+        }
+      }
+      function checkAndSwitchToJSON(cm, val) {
+        if (!/^\s*</.test(val) && val.match(/\S/)) {
+          cm.setOption("mode", "javascript");
+        }
+      }
     </script>
   </body>
 </html>
